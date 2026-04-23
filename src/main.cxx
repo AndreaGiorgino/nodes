@@ -66,7 +66,7 @@ auto main([[maybe_unused]] int argc, char** argv) -> int {
     auto& camera = env.camera();
     camera.zoom = 1.0f;
 
-    const node testNode("this is a title", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec nec commodo dui. Mauris eu risus et libero pulvinar facilisis. In commodo imperdiet mauris, vel hendrerit dolor ultricies quis. Vivamus varius tellus sed libero fringilla ultrices. Maecenas at ipsum sit amet mauris finibus accumsan. In congue consectetur dui. Nam id fermentum orci.", { 10, 10 });
+    const node testNode("c79b4316-7236-45ca-ab1b-d5bd8b78a485", "this is a title", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec nec commodo dui. Mauris eu risus et libero pulvinar facilisis. In commodo imperdiet mauris, vel hendrerit dolor ultricies quis. Vivamus varius tellus sed libero fringilla ultrices. Maecenas at ipsum sit amet mauris finibus accumsan. In congue consectetur dui. Nam id fermentum orci.", { 10, 10 });
 
     while (!::WindowShouldClose()) {
         ::BeginDrawing();
@@ -97,7 +97,7 @@ auto main([[maybe_unused]] int argc, char** argv) -> int {
 
                 // TODO: reload font
                 // TODO: draw text after EndMode2D
-                
+
                 const auto scale = wheel * 0.25f;
                 camera.zoom = std::clamp(
                         ::expf(::logf(camera.zoom) + scale),

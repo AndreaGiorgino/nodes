@@ -19,7 +19,7 @@ auto enviroment::init(std::string_view program)
         if (!fs::exists(filePath))
             throw std::runtime_error(
                     std::format(
-                        "enviroment error: cannot find default font file: [{}]",
+                        "enviroment error - cannot find default font file: [{}]",
                         filePath.string()));
 
         _font = ::LoadFontEx(filePath.c_str(), fontSize, NULL, 0);

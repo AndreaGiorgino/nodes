@@ -7,8 +7,8 @@ class node final {
     public:
         node(void)
             noexcept;
-        node(std::string_view title, std::string_view description, ::Vector2 pos)
-            noexcept;
+        node(std::string_view uuid, std::string_view title,
+                std::string_view description, ::Vector2 pos);
         ~node(void)
             noexcept = default;
 
@@ -34,6 +34,8 @@ class node final {
         };
 
     private:
+        std::string _uuid {};
+
         node_text _title {};
         node_text _description {};
         ::Vector2 _pos {};
