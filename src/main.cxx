@@ -48,7 +48,7 @@ auto render_grid(void) noexcept -> void {
     }
 }
 
-auto main([[maybe_unused]] int argc, char** argv) -> int {
+auto main(int, char** argv) -> int {
     ::SetConfigFlags(FLAG_VSYNC_HINT | FLAG_MSAA_4X_HINT | FLAG_WINDOW_HIGHDPI);
     // ::SetConfigFlags(FLAG_WINDOW_RESIZABLE);
 
@@ -66,7 +66,22 @@ auto main([[maybe_unused]] int argc, char** argv) -> int {
     auto& camera = env.camera();
     camera.zoom = 1.0f;
 
-    const node testNode(
+    std::vector nodes {
+        std::make_shared<node>(
+            "c79b4316-7236-45ca-ab1b-d5bd8b78a486",
+            "this is a title",
+            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec nec"
+            " commodo dui. Mauris eu risus et libero pulvinar facilisis. In"
+            " commodo imperdiet mauris, vel hendrerit dolor ultricies quis."
+            " Vivamus varius tellus sed libero fringilla ultrices. Maecenas at"
+            " ipsum sit amet mauris finibus accumsan. In congue consectetur dui."
+            " commodo dui. Mauris eu risus et libero pulvinar facilisis. In"
+            " commodo imperdiet mauris, vel hendrerit dolor ultricies quis."
+            " Vivamus varius tellus sed libero fringilla ultrices. Maecenas at"
+            " ipsum sit amet mauris finibus accumsan. In congue consectetur dui."
+            " Nam id fermentum orci.",
+            ::Vector2 { 0, 0 }),
+        std::make_shared<node>(
             "c79b4316-7236-45ca-ab1b-d5bd8b78a485",
             "this is a title",
             "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec nec"
@@ -75,7 +90,22 @@ auto main([[maybe_unused]] int argc, char** argv) -> int {
             " Vivamus varius tellus sed libero fringilla ultrices. Maecenas at"
             " ipsum sit amet mauris finibus accumsan. In congue consectetur dui."
             " Nam id fermentum orci.",
-            { 10, 10 });
+            ::Vector2 { 600, 0 }),
+        std::make_shared<node>(
+            "c79b4316-7236-45ca-ab1b-d5bd8b78a484",
+            "this is a title",
+            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec nec"
+            " commodo dui. Mauris eu risus et libero pulvinar facilisis. In"
+            " commodo imperdiet mauris, vel hendrerit dolor ultricies quis."
+            " Vivamus varius tellus sed libero fringilla ultrices. Maecenas at"
+            " ipsum sit amet mauris finibus accumsan. In congue consectetur dui."
+            " Nam id fermentum orci.",
+            ::Vector2 { 600, 250 }),
+    };
+
+    node_map nodeMap {};
+    for (const auto& ptr : nodes)
+        nodeMap.insert({ std::string(ptr->uuid()), {} });
 
     while (!::WindowShouldClose()) {
         ::BeginDrawing();
@@ -85,11 +115,13 @@ auto main([[maybe_unused]] int argc, char** argv) -> int {
             ::BeginMode2D(camera);
             {
                 render_grid();
-                testNode.render();
+                for (const auto& node : nodes)
+                    node->render();
             }
             ::EndMode2D();
 
-            testNode.render_text();
+                for (const auto& node : nodes)
+                    node->render_text();
 
             // update the camera position
             if (::IsMouseButtonDown(::MOUSE_BUTTON_LEFT)) {
