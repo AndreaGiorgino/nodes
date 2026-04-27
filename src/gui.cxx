@@ -12,10 +12,13 @@ namespace gui {
             return {};
 
         const auto& env = enviroment::get_instance();
+        const auto& camera = env.camera();
         const auto& [font, fontSize] = env.font();
 
-        const std::string textStr { text };
-        return ::MeasureTextEx(font, textStr.c_str(), fontSize, 1);
+        auto ret = ::MeasureTextEx(font, text.data(), fontSize, 1);
+        ret.x /= camera.zoom;
+        ret.y /= camera.zoom;
+        return ret;
     }
 
     auto wrap_text(std::string_view text, float maxWidth) noexcept
@@ -31,8 +34,7 @@ namespace gui {
                     line.empty() ? word : (line + ' ' + word);
 
                 const auto textSize = gui::measure_text(testLine);
-
-                if (textSize.x > maxWidth) {
+                if (textSize.x >= maxWidth) {
                     ret += ret.empty() ? line : ('\n' + line);
                     line = word;
                 } else line = std::move(testLine);
@@ -51,7 +53,6 @@ namespace gui {
             const auto& [font, fontSize] = scaled
                 ? env.font() : env.font_default();
 
-            const std::string textStr { text };
-            ::DrawTextEx(font, textStr.c_str(), pos, fontSize, 1, tint);
+            ::DrawTextEx(font, text.data(), pos, fontSize, 1, tint);
         }
 } // namespace gui
