@@ -19,28 +19,28 @@ class enviroment final {
 
         template<class Self>
         [[nodiscard]] auto& camera(this Self&& self) noexcept;
-        template<class Self>
-        [[nodiscard]] auto& font(this Self&& self) noexcept;
+        auto load_font(unsigned fontSize = fontSizeDefault) -> void;
+        [[nodiscard]] auto font(void) const noexcept -> std::pair<::Font, unsigned>;
+        [[nodiscard]] auto font_default(void) const noexcept -> std::pair<::Font, unsigned>;
 
     private:
         enviroment(void) = default;
 
     public:
         static constexpr int gridSize { 100 };
-        static constexpr int fontSize { 20 };
+        static constexpr int fontSizeDefault { 20 };
 
     private:
         std::filesystem::path _program {};
+
         ::Camera2D _camera {};
+
+        unsigned _fontSize { fontSizeDefault };
         ::Font _font {};
+        ::Font _fontDefault {};
 };
 
 template<class Self>
 auto& enviroment::camera(this Self&& self) noexcept {
     return std::forward_like<Self>(self._camera);
-}
-
-template<class Self>
-auto& enviroment::font(this Self&& self) noexcept {
-    return std::forward_like<Self>(self._font);
 }

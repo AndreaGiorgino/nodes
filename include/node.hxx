@@ -11,13 +11,16 @@ class node final {
 
         template<class Self>
         [[nodiscard]] auto& title(this Self&& self) noexcept;
+        template<class Self>
+        [[nodiscard]] auto& description(this Self&& self) noexcept;
 
     public:
         auto update(void) noexcept -> void;
         auto render(void) const noexcept -> void;
+        auto render_text(void) const noexcept -> void;
 
     private:
-        static constexpr float width { 400 };
+        static constexpr float width { 500 };
         static constexpr float padding { 10 };
 
         struct node_text {
@@ -41,4 +44,9 @@ using node_map = std::unordered_map<std::string, node_ptr>;
 template<class Self>
 auto& node::title(this Self&& self) noexcept {
     return std::forward_like<Self>(self.title);
+}
+
+template<class Self>
+auto& node::description(this Self&& self) noexcept {
+    return std::forward_like<Self>(self._description);
 }

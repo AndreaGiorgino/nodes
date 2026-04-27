@@ -1,3 +1,4 @@
+#include <cmath>
 #include <ranges>
 
 #include "enviroment.hxx"
@@ -11,10 +12,10 @@ namespace gui {
             return {};
 
         const auto& env = enviroment::get_instance();
-        const auto& font = env.font();
+        const auto& [font, fontSize] = env.font();
 
         const std::string textStr { text };
-        return ::MeasureTextEx(font, textStr.c_str(), env.fontSize, 1);
+        return ::MeasureTextEx(font, textStr.c_str(), fontSize, 1);
     }
 
     auto wrap_text(std::string_view text, float maxWidth) noexcept
@@ -41,41 +42,31 @@ namespace gui {
             return ret;
         }
 
-    auto draw_text(std::string_view text, ::Vector2 pos, ::Color tint) noexcept
-        -> void {
-            if (text.empty())
-                return;
-
-            const auto& env = enviroment::get_instance();
-            const auto& font = env.font();
-
-            const std::string textStr { text };
-            ::DrawTextEx(font, textStr.c_str(), pos, env.fontSize, 1, tint);
-        }
-
     auto draw_text_rec(std::string_view text, ::Vector2 recPos, float width,
-            float padding, ::Color color, ::Color tint) noexcept -> ::Vector2 {
+            float padding, ::Color color, ::Color tint) noexcept -> void {
         if (text.empty())
-            return {};
+            return;
 
-        const std::string textStr { text };
         const auto textSize = gui::measure_text(text);
-
         const ::Vector2 recSize {
             width,
             textSize.y + padding * 2,
         };
 
-        const ::Vector2 textPos {
-            recPos.x + padding,
-            recPos.y + padding,
-        };
-
         ::DrawRectangleV(recPos, recSize, color);
         ::DrawRectangleLines(recPos.x, recPos.y, recSize.x, recSize.y, tint);
-
-        gui::draw_text(text, textPos);
-
-        return recSize;
     }
+
+    auto draw_text(std::string_view text, ::Vector2 pos, ::Color tint,
+            bool scaled) noexcept -> void {
+            if (text.empty())
+                return;
+
+            const auto& env = enviroment::get_instance();
+            const auto& [font, fontSize] = scaled
+                ? env.font() : env.font_default();
+
+            const std::string textStr { text };
+            ::DrawTextEx(font, textStr.c_str(), pos, fontSize, 1, tint);
+        }
 } // namespace gui

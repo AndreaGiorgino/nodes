@@ -70,10 +70,10 @@ auto main([[maybe_unused]] int argc, char** argv) -> int {
             "this is a title",
             "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec nec"
             " commodo dui. Mauris eu risus et libero pulvinar facilisis. In"
-            "commodo imperdiet mauris, vel hendrerit dolor ultricies quis."
-            "Vivamus varius tellus sed libero fringilla ultrices. Maecenas at"
-            "ipsum sit amet mauris finibus accumsan. In congue consectetur dui."
-            "Nam id fermentum orci.",
+            " commodo imperdiet mauris, vel hendrerit dolor ultricies quis."
+            " Vivamus varius tellus sed libero fringilla ultrices. Maecenas at"
+            " ipsum sit amet mauris finibus accumsan. In congue consectetur dui."
+            " Nam id fermentum orci.",
             { 10, 10 });
 
     while (!::WindowShouldClose()) {
@@ -87,6 +87,8 @@ auto main([[maybe_unused]] int argc, char** argv) -> int {
                 testNode.render();
             }
             ::EndMode2D();
+
+            testNode.render_text();
 
             // update the camera position
             if (::IsMouseButtonDown(::MOUSE_BUTTON_LEFT)) {
@@ -103,13 +105,12 @@ auto main([[maybe_unused]] int argc, char** argv) -> int {
                 camera.offset = ::GetMousePosition();
                 camera.target = mouseWorldPosition;
 
-                // TODO: reload font
-                // TODO: draw text after EndMode2D
-
                 const auto scale = wheel * 0.25f;
                 camera.zoom = std::clamp(
                         ::expf(::logf(camera.zoom) + scale),
-                        0.05f, 64.0f);
+                        0.5f, 2.75f);
+
+                env.load_font(std::floor(env.fontSizeDefault * camera.zoom));
             }
         }
         ::EndDrawing();

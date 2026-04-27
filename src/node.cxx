@@ -2,6 +2,7 @@
 #include "gui.hxx"
 #include "node.hxx"
 #include "raylib.h"
+#include "raymath.h"
 #include "uuid.hxx"
 
 node::node(void)
@@ -37,13 +38,36 @@ auto node::update(void) noexcept -> void {
 }
 
 auto node::render(void) const noexcept -> void {
-    const auto titleSize = gui::draw_text_rec(_title.wrapped, _pos, width,
-            padding, ::ColorAlpha(::BLUE, 0.2f));
+    gui::draw_text_rec(_title.wrapped, _pos, width, padding,
+            ::ColorAlpha(::BLUE, 0.2f));
 
-    const ::Vector2 descriptionPos {
+    const auto titleSize = gui::measure_text(_title.wrapped);
+    const ::Vector2 recPos {
         _pos.x,
-        _pos.y + titleSize.y
+        _pos.y + titleSize.y + padding * 2,
     };
 
-    gui::draw_text_rec(_description.wrapped, descriptionPos, width);
+    gui::draw_text_rec(_description.wrapped, recPos, width);
+}
+
+auto node::render_text(void) const noexcept -> void {
+    const auto& env = enviroment::get_instance();
+    const auto& camera = env.camera();
+
+    auto textPos = ::GetWorldToScreen2D({
+            _pos.x + padding * camera.zoom,
+            _pos.y + padding * camera.zoom,
+        }, camera);
+
+    gui::draw_text(_title.wrapped, textPos);
+
+    const auto titleSize = gui::measure_text(_title.wrapped);
+
+    textPos = ::GetWorldToScreen2D({
+            _pos.x + padding * camera.zoom,
+            _pos.y + padding * camera.zoom * 3.0f + titleSize.y,
+        }, camera);
+
+
+    gui::draw_text(_description.wrapped, textPos);
 }
