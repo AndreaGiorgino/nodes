@@ -28,7 +28,7 @@ class enviroment final {
         enviroment(void) = default;
 
     public:
-        static constexpr int gridSize { 100 };
+        static constexpr int gridSize { 50 };
         static constexpr int fontSizeDefault { 20 };
 
     private:

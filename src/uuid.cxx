@@ -46,7 +46,6 @@ namespace uuid {
             "-[0-9A-F]{12}$",
             std::regex::icase);
 
-        const std::string textStr { text };
-        return std::regex_match(textStr, re);
+        return std::regex_match(text.data(), re);
     }
 } // namespace uuid
