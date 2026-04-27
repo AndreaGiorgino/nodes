@@ -1,6 +1,7 @@
 #pragma once
 #include <filesystem>
 #include <string>
+#include <unordered_map>
 #include <utility>
 
 #include "raylib.h"
@@ -20,8 +21,8 @@ class enviroment final {
         template<class Self>
         [[nodiscard]] auto& camera(this Self&& self) noexcept;
         auto load_font(unsigned fontSize = fontSizeDefault) -> void;
-        [[nodiscard]] auto font(void) const noexcept -> std::pair<::Font, unsigned>;
-        [[nodiscard]] auto font_default(void) const noexcept -> std::pair<::Font, unsigned>;
+        [[nodiscard]] auto font(void) const -> std::pair<::Font, unsigned>;
+        [[nodiscard]] auto font_default(void) const -> std::pair<::Font, unsigned>;
 
     private:
         enviroment(void) = default;
@@ -36,7 +37,7 @@ class enviroment final {
         ::Camera2D _camera {};
 
         unsigned _fontSize { fontSizeDefault };
-        ::Font _font {};
+        std::unordered_map<unsigned, ::Font> _fontMap {};
         ::Font _fontDefault {};
 };
 
