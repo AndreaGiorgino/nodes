@@ -5,6 +5,8 @@
 #include <unordered_map>
 #include <vector>
 
+#include "raylib.h"
+
 class node;
 using node_ptr = std::shared_ptr<node>;
 using node_map = std::unordered_map<std::string, std::vector<node_ptr>>;
