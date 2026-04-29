@@ -1,10 +1,13 @@
+#include <algorithm>
 #include <format>
+#include <ranges>
 #include <regex>
 
 #include "uuid.hxx"
 #include "tokenizer.hxx"
 
 namespace fs = std::filesystem;
+namespace ranges = std::ranges;
 
 tokenizer::tokenizer_error::tokenizer_error(std::string_view message) noexcept {
     _message += message;
@@ -12,6 +15,36 @@ tokenizer::tokenizer_error::tokenizer_error(std::string_view message) noexcept {
 
 auto tokenizer::tokenizer_error::what(void) const noexcept -> const char* {
     return _message.c_str();
+}
+
+auto tokenizer::token::text(void) const noexcept -> std::string {
+    std::string ret {};
+    for (size_t i = 0; i < words.size(); i++) {
+        const auto& word = words[i];
+        const auto isalnum = ranges::all_of(word.text,
+                [](char ch) -> bool { return std::isalnum(ch); });
+
+        if (type == tokenizer::token_t::STRING_LITERAL) {
+            if (!ret.empty()) {
+                if (i > 0) {
+                    const auto& lastWord = words[i - 1];
+                    if (lastWord.row < word.row)
+                        ret += '\n';
+                    else if (isalnum)
+                        ret += ' ';
+                } else if (isalnum)
+                    ret += ' ';
+            }
+
+            ret += word.text;
+        } else {
+            if (!ret.empty() && isalnum)
+                ret += ' ';
+            ret += word.text;
+        }
+    }
+
+    return ret;
 }
 
 tokenizer::tokenizer(fs::path filePath) 
@@ -103,7 +136,7 @@ __tokenizer_scan_start:
                     co_yield ret;
                     goto __tokenizer_scan_start;
                 } else ret.words.push_back(nextWord);
-                
+
                 it++;
             };
 

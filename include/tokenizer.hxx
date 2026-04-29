@@ -39,6 +39,8 @@ class tokenizer final {
         struct token final {
             token_t type { token_t::STRING };
             std::vector<parser::word> words {};
+
+            auto text(void) const noexcept -> std::string;
         };
 
     public:
