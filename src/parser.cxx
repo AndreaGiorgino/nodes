@@ -18,21 +18,24 @@ parser::parser(fs::path filePath)
         if (!fs::exists(_filePath))
             throw parser::parser_error(
                     std::format(
-                        "Cannot find file: [{}].",
-                        _filePath.string()));
+                        "Cannot find file: [{}] [{}].",
+                        _filePath.filename().string(),
+                        _filePath.parent_path().string()));
         else if (!fs::is_regular_file(_filePath))
             throw parser::parser_error(
                     std::format(
-                        "Cannot read non-regular file: [{}].",
-                        _filePath.string()));
+                        "Cannot read non-regular file: [{}] [{}].",
+                        _filePath.filename().string(),
+                        _filePath.parent_path().string()));
     }
 
 auto parser::words(void) const -> std::generator<parser::word> {
     std::ifstream ifs(_filePath.string());
     if (!ifs) throw parser::parser_error(
             std::format(
-                "Cannot open file: [{}].",
-                _filePath.string()));
+                "Cannot open file: [{}] [{}].",
+                _filePath.filename().string(),
+                _filePath.parent_path().string()));
 
     parser::word ret;
     while (!ifs.eof()) {
