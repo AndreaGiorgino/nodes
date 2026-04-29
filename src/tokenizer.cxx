@@ -3,7 +3,7 @@
 #include "tokenizer.hxx"
 
 auto tokenizer::tokens(void) const -> std::generator<tokenizer::token> {
-    
+
 }
 
 constexpr auto tokenizer::token_type_name(tokenizer::token_t type)

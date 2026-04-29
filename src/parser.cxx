@@ -73,7 +73,7 @@ auto parser::words(void) const -> std::generator<parser::word> {
                     ret.col++;
                     continue;
                 }
-                
+
                 co_yield ret;
                 ret.text.clear();
             }
