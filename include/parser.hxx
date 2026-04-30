@@ -19,8 +19,8 @@ class parser final {
         };
 
         struct string final {
-            size_t row { 0 };
-            size_t col { 0 };
+            size_t row { 1 };
+            size_t col { 1 };
             size_t indentLevel { 0 };
             std::string text {};
         };

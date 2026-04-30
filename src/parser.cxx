@@ -54,7 +54,7 @@ auto parser::strings(void) const -> std::generator<parser::string> {
 
     while (!ifs.eof()) {
         // update the indentation level
-        if (ret.col == 0) {
+        if (ret.col == 1) {
             while (!ifs.eof()
                     && (char)(unsigned)ifs.peek() == ' ') {
                 ifs.get();
@@ -84,7 +84,7 @@ auto parser::strings(void) const -> std::generator<parser::string> {
             }
 
             ret.row++;
-            ret.col = 0;
+            ret.col = 1;
             ret.indentLevel = 0;
         } else if (!std::isspace(ch)
                 && !std::isalnum(ch)) {
