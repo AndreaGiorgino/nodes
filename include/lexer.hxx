@@ -1,6 +1,7 @@
 #pragma once
 #include <filesystem>
 #include <generator>
+#include <string>
 
 #include "node.hxx"
 

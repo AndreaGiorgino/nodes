@@ -51,7 +51,12 @@ auto render_grid(void) noexcept -> void {
     }
 }
 
-auto main(void) -> int {
+// FIXME: temporary main for testing the lexer class
+auto main(int, char** argv) -> int {
+    // FIXME: needed for the node class to work
+    auto& env = enviroment::get_instance();
+    env.init(*argv);
+
     lexer lex { fs::path("assets") / "example.conf" };
     for (const auto& node : lex.nodes()) {
         std::println("node: {:?}", node.uuid());
