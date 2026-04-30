@@ -39,7 +39,6 @@ class node final {
         node(std::string_view uuid, std::string_view title, std::string_view description, ::Vector2 pos);
         node(const node&)    = delete;
         node(node&&)         = delete;
-        ~node(void) noexcept = default;
 
     public:
         [[nodiscard]] auto uuid(void) const noexcept -> std::string;
@@ -47,6 +46,8 @@ class node final {
         [[nodiscard]] auto& title(this Self&& self) noexcept;
         template<class Self>
         [[nodiscard]] auto& description(this Self&& self) noexcept;
+        template<class Self>
+        [[nodiscard]] auto& position(this Self&& self) noexcept;
 
         auto update(void) noexcept -> void;
         auto render(void) const noexcept -> void;
@@ -71,10 +72,15 @@ class node final {
 
 template<class Self>
 auto& node::title(this Self&& self) noexcept {
-    return std::forward_like<Self>(self.title);
+    return std::forward_like<Self>(self._title);
 }
 
 template<class Self>
 auto& node::description(this Self&& self) noexcept {
     return std::forward_like<Self>(self._description);
+}
+
+template<class Self>
+auto& node::position(this Self&& self) noexcept {
+    return std::forward_like<Self>(self._pos);
 }
