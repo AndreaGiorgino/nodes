@@ -69,6 +69,11 @@ __tokenizer_scan_start:
         ret.strings.clear();
         const auto& str = *it;
 
+        if (str.text.empty()) {
+            it++;
+            continue;
+        }
+
         // handle syntax tokens
         if (str.text == ",") {
             ret.type = tokenizer::token_t::COMMA;
@@ -128,23 +133,27 @@ __tokenizer_scan_start:
                 ret.type = tokenizer::token_t::STRING_LITERAL;
             else throw tokenizer::tokenizer_error(
                     std::format(
-                        "Multi-line string definition character not implemented ({:?}): [{}:{}:{}] [{}].",
-                        str.text, _filePath.filename().string(),
-                        str.row, str.col, _filePath.parent_path().string()));
+                        "Multi-line string definition character not implemented ({:?}): [{}:{}:{}].",
+                        str.text, _filePath.string(), str.row, str.col));
 
-            if (++it == gen.end()) {
-                co_yield ret;
-                continue;
-            }
+            if (++it == gen.end())
+                throw tokenizer::tokenizer_error(
+                        std::format(
+                            "Multi-line string value expected, got EOF instead: [{}:{}:{}].",
+                            _filePath.string(), str.row, str.col));
 
             const auto indentLevel = (*it).indentLevel;
             while(it != gen.end()) {
-                const auto& nextWord = *it;
-                if (nextWord.indentLevel != indentLevel) {
+                const auto& nextString = *it;
+                if (nextString.text.empty()) {
+                    it++;
+                    continue;
+                } else if (nextString.indentLevel != indentLevel) {
                     co_yield ret;
                     goto __tokenizer_scan_start;
-                } else ret.strings.push_back(nextWord);
+                }
 
+                ret.strings.push_back(nextString);
                 it++;
             };
 
@@ -177,23 +186,23 @@ auto tokenizer::token_type_name(tokenizer::token_t type)
     -> std::string_view {
         switch (type) {
             case tokenizer::token_t::NUMBER:
-                return "NUMBER";
+                return "Number";
             case tokenizer::token_t::STRING:
-                return "STRING";
+                return "String";
             case tokenizer::token_t::STRING_LITERAL:
-                return "STRING_LITERAL";
+                return "String literal";
             case tokenizer::token_t::UUID:
                 return "UUID";
             case tokenizer::token_t::COMMA:
-                return "COMMA";
+                return "Comma";
             case tokenizer::token_t::CSQARE:
-                return "CSQARE";
+                return "Close square bracket";
             case tokenizer::token_t::DASH:
-                return "DASH";
+                return "Dash";
             case tokenizer::token_t::OSQARE:
-                return "OSQARE";
+                return "Open square bracket";
             case tokenizer::token_t::COLON:
-                return "COLON";
+                return "Colon";
         };
 
         throw tokenizer::tokenizer_error(
