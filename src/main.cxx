@@ -5,12 +5,11 @@
 #include <ranges>
 
 #include "enviroment.hxx"
+#include "lexer.hxx"
 #include "node.hxx"
-#include "tokenizer.hxx"
 #include "raylib.h"
 #include "raymath.h"
 #include "uuid.hxx"
-#include "parser.hxx"
 
 namespace fs = std::filesystem;
 namespace ranges = std::ranges;
@@ -53,15 +52,14 @@ auto render_grid(void) noexcept -> void {
 }
 
 auto main(void) -> int {
-    // parser p { fs::path("assets") / "example.conf" };
-    // for (const auto& str : p.strings()) {
-    //     std::println("string: {:?}", str.text);
-    // }
+    lexer lex { fs::path("assets") / "example.conf" };
+    for (const auto& node : lex.nodes()) {
+        std::println("node: {:?}", node.uuid());
+        std::println("-- title: {:?}", node.title().text);
+        std::println("-- description: {:?}", node.description().text);
 
-    tokenizer t { fs::path("assets") / "example.conf" };
-    for (const auto& token : t.tokens()) {
-        std::println("token: {:?}", token.text());
-        std::println("--type: {:?}", tokenizer::token_type_name(token.type));
+        const auto& pos = node.position();
+        std::println("-- position: [{}, {}]", pos.x, pos.y);
     }
 
     return 0;
