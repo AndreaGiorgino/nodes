@@ -3,6 +3,7 @@
 #include <format>
 #include <print>
 #include <ranges>
+#include <unordered_map>
 
 #include "enviroment.hxx"
 #include "lexer.hxx"
@@ -73,6 +74,21 @@ auto main(int, char** argv) -> int {
     lexer lex { fs::path("assets") / "example.conf" };
     auto nodes = lex.nodes() | ranges::to<std::vector>();
 
+    // get the connections to each node
+    std::unordered_map<std::string, std::vector<node_ptr>> nodeMap {};
+    for (const auto& node : nodes)
+        for (const auto& uuid : node->connections())
+            if (auto it = nodeMap.find(uuid);
+                    it != nodeMap.end())
+                (*it).second.push_back(node);
+            else nodeMap.insert({ uuid, { node } });
+
+    for (const auto& [k, v]: nodeMap) {
+        std::println("-- node: {:?}", k);
+        for (const auto& node : v)
+            std::println("  -- connection: {:?}", node->uuid());
+    }
+
     while (!::WindowShouldClose()) {
         ::BeginDrawing();
         {
@@ -81,8 +97,13 @@ auto main(int, char** argv) -> int {
             ::BeginMode2D(camera);
             {
                 render_grid();
-                for (const auto& node : nodes)
+
+                for (const auto& node : nodes) {
                     node->render();
+
+                    // render the connections
+                    const auto& pos = node->position();
+                }
             }
             ::EndMode2D();
 
