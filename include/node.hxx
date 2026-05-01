@@ -28,6 +28,14 @@ class node final {
         node(void) noexcept;
         node(std::string_view uuid, std::string_view title, std::string_view description, ::Vector2 pos);
 
+        node(const node&) = delete;
+        auto operator =(const node&) = delete;
+
+        node(node&&) = delete;
+        auto operator =(node&&) = delete;
+
+        ~node(void) noexcept = default;
+
     public:
         [[nodiscard]] auto uuid(void) const noexcept -> std::string;
         template<class Self>

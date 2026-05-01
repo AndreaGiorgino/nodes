@@ -44,9 +44,16 @@ class tokenizer final {
         };
 
     public:
+        tokenizer(void) = delete;
         tokenizer(std::filesystem::path filePath);
+
         tokenizer(const tokenizer&) = delete;
+        auto operator =(const tokenizer&) = delete;
+
         tokenizer(tokenizer&&) = delete;
+        auto operator =(tokenizer&&) = delete;
+
+        ~tokenizer(void) = default;
 
     public:
         auto tokens(void) const -> std::generator<token>;

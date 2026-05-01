@@ -20,8 +20,13 @@ class enviroment final {
         };
 
     public:
-        enviroment(const enviroment&) noexcept = delete;
-        enviroment(enviroment&&) noexcept = delete;
+        enviroment(const enviroment&) = delete;
+        auto operator =(const enviroment&) = delete;
+
+        enviroment(enviroment&&) = delete;
+        auto operator =(enviroment&&) = delete;
+
+        ~enviroment(void) noexcept = default;
 
     public:
         static auto get_instance(void) noexcept -> enviroment&;
