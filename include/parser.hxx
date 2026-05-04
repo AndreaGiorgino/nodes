@@ -11,11 +11,19 @@ class parser final {
             public:
                 parser_error(std::string_view message = "Unknown error.") noexcept;
 
+                parser_error(const parser_error&) noexcept = default;
+                auto operator =(const parser_error&) noexcept = default;
+
+                parser_error(parser_error&&) noexcept = default;
+                auto operator =(parser_error&&) noexcept = default;
+
+                ~parser_error(void) noexcept = default;
+
             public:
                 auto what(void) const noexcept -> const char* override;
 
             private:
-                std::string _message { "parser error - " };
+                std::string _message { "-- Parser error - " };
         };
 
         struct string final {

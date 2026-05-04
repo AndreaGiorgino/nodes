@@ -12,11 +12,19 @@ class tokenizer final {
             public:
                 tokenizer_error(std::string_view message = "Unknown error.") noexcept;
 
+                tokenizer_error(const tokenizer_error&) noexcept = default;
+                auto operator =(const tokenizer_error&) noexcept = default;
+
+                tokenizer_error(tokenizer_error&&) noexcept = default;
+                auto operator =(tokenizer_error&&) noexcept = default;
+
+                ~tokenizer_error(void) noexcept = default;
+
             public:
                 auto what(void) const noexcept -> const char* override;
 
             private:
-                std::string _message { "tokenizer error - " };
+                std::string _message { "-- Tokenizer error - " };
         };
 
         enum class token_t {

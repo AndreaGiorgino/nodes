@@ -11,11 +11,19 @@ class lexer final {
             public:
                 lexer_error(std::string_view message = "Unknown error.") noexcept;
 
+                lexer_error(const lexer_error&) = default;
+                auto operator =(const lexer_error&) = default;
+
+                lexer_error(lexer_error&&) = default;
+                auto operator =(lexer_error&&) = default;
+
+                ~lexer_error(void) = default;
+
             public:
                 auto what(void) const noexcept -> const char* override;
 
             private:
-                std::string _message { "lexer error - " };
+                std::string _message { "-- Lexer error - " };
         };
 
     public:

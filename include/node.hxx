@@ -15,11 +15,19 @@ class node final {
             public:
                 node_error(std::string_view message = "Unknown error.") noexcept;
 
+                node_error(const node_error&) noexcept = default;
+                auto operator =(const node&) noexcept = default;
+
+                node_error(node_error&&) noexcept = default;
+                auto operator =(node_error&&) noexcept = default;
+
+                ~node_error(void) noexcept = default;
+
             public:
                 auto what(void) const noexcept -> const char* override;
 
             private:
-                std::string _message { "node error - " };
+                std::string _message { "-- Node error - " };
         };
 
     public:
