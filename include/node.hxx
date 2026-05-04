@@ -16,10 +16,10 @@ class node final {
                 node_error(std::string_view message = "Unknown error.") noexcept;
 
                 node_error(const node_error&) noexcept = default;
-                auto operator =(const node&) noexcept = default;
+                auto operator =(const node_error&) noexcept -> node_error& = default;
 
                 node_error(node_error&&) noexcept = default;
-                auto operator =(node_error&&) noexcept = default;
+                auto operator =(node_error&&) noexcept -> node_error& = default;
 
                 ~node_error(void) noexcept = default;
 

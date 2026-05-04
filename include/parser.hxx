@@ -12,10 +12,10 @@ class parser final {
                 parser_error(std::string_view message = "Unknown error.") noexcept;
 
                 parser_error(const parser_error&) noexcept = default;
-                auto operator =(const parser_error&) noexcept = default;
+                auto operator =(const parser_error&) noexcept -> parser_error& = default;
 
                 parser_error(parser_error&&) noexcept = default;
-                auto operator =(parser_error&&) noexcept = default;
+                auto operator =(parser_error&&) noexcept -> parser_error& = default;
 
                 ~parser_error(void) noexcept = default;
 

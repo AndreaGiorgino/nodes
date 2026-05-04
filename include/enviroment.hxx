@@ -13,10 +13,10 @@ class enviroment final {
                 enviroment_error(std::string_view message = "Unknown error.") noexcept;
 
                 enviroment_error(const enviroment_error&) noexcept = default;
-                auto operator =(const enviroment_error&) noexcept = default;
+                auto operator =(const enviroment_error&) noexcept -> enviroment_error& = default;
 
                 enviroment_error(enviroment_error&&) noexcept = default;
-                auto operator =(enviroment_error&&) noexcept = default;
+                auto operator =(enviroment_error&&) noexcept -> enviroment_error& = default;
 
                 ~enviroment_error(void) noexcept = default;
 

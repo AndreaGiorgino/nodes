@@ -13,10 +13,10 @@ class tokenizer final {
                 tokenizer_error(std::string_view message = "Unknown error.") noexcept;
 
                 tokenizer_error(const tokenizer_error&) noexcept = default;
-                auto operator =(const tokenizer_error&) noexcept = default;
+                auto operator =(const tokenizer_error&) noexcept -> tokenizer_error& = default;
 
                 tokenizer_error(tokenizer_error&&) noexcept = default;
-                auto operator =(tokenizer_error&&) noexcept = default;
+                auto operator =(tokenizer_error&&) noexcept -> tokenizer_error& = default;
 
                 ~tokenizer_error(void) noexcept = default;
 
