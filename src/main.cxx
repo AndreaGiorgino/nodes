@@ -58,8 +58,8 @@ auto main(int argc, char** argv) -> int {
         configFilePath = fs::path{ *(argv + 1) };
     else if (argc > 2)
         throw std::runtime_error(
-                    "Invalid number of arguments.\n"
-                    "Execute `nodes --help` for more information.");
+                    "-- Invalid number of arguments.\n"
+                    "-- Execute `nodes --help` for more information.");
 
     ::SetConfigFlags(FLAG_VSYNC_HINT | FLAG_MSAA_4X_HINT | FLAG_WINDOW_HIGHDPI);
     // ::SetConfigFlags(FLAG_WINDOW_RESIZABLE);
@@ -87,9 +87,11 @@ auto main(int argc, char** argv) -> int {
         for (const auto& uuid : node->connections())
             if (auto it = nodeMap.find(uuid);
                     it != nodeMap.end())
-                (*it).second.push_back(node);
+                it->second.push_back(node);
             else nodeMap.insert({ uuid, { node } });
 
+    // TODO: handle error propagation
+    // TODO: snackbar implementation
     while (!::WindowShouldClose()) {
         ::BeginDrawing();
         {
@@ -102,30 +104,64 @@ auto main(int argc, char** argv) -> int {
                 for (const auto& node : nodes) {
                     node->render();
 
-                    // no connections to the node
-                    if (!nodeMap.contains(node->uuid()))
-                        continue;
+                    // iterate connections
+                    for (int indexFrom = 0;
+                            (size_t)indexFrom < node->connections().size();
+                            indexFrom++) {
+                        const auto& connectedNodeUuid =
+                            node->connections()[indexFrom];
+                        const auto& connectedNode =
+                            [&](void) -> node_ptr {
+                                for (const auto& n : nodes)
+                                    if (n->uuid() == connectedNodeUuid)
+                                        return n;
+                                throw std::runtime_error(
+                                        std::format(
+                                            "-- Configuration error - Cannot find node {:?} connected to {:?}",
+                                            connectedNodeUuid, node->uuid()));
+                            }();
 
-                    // render the connections
-                    const auto& pos = node->position();
-
-                    // TODO: order the connections based on the y position
-                    // of the node to which to connect to, then draw the
-                    // connections using the formula:
-                    //
-                    // y = nodeHeight / 2.0f + gap (index - connectionIndex)
-                    //
-                    // Use the formula to get the relative y position (distance
-                    // from the top of the node position) of both the origin
-                    // node and the destination node
-
-                    for (const auto& uuid : node->connections()) {
-                        // unreachable: node map creation error
-                        if (!nodeMap.contains(uuid))
+                        // find connections definition to the connected node
+                        const auto it = nodeMap.find(connectedNodeUuid);
+                        if (it == nodeMap.end())
+                            // unreachable: node map creation error
                             throw std::runtime_error(
                                     std::format(
-                                        "Missing connection definitions in node map: {:?}",
-                                        uuid));
+                                        "-- Node map error - Missing connection definitions in node map: {:?}",
+                                        connectedNodeUuid));
+
+                        // find the node index in the connected node connections
+                        const auto indexTo = [&](void) {
+                            for (int j = 0; it->second.size(); j++)
+                                if (it->second[j]->uuid() == node->uuid())
+                                    return j;
+                            throw std::runtime_error(
+                                    std::format(
+                                        "-- Node map error - Missing connection definition from node {:?} to node {:?}",
+                                        node->uuid(), connectedNodeUuid));
+                        }();
+
+                        // draw the connection based on the formula:
+                        // y = nodeHeight / 2.0f + gap (connectionIndex - 1)
+
+                        const ::Vector2 posFrom {
+                            node->position().x + node->size().x,
+                            node->position().y
+                                + node->size().y * 0.5f
+                                + node::connectionGap * (indexFrom - 1),
+                        };
+
+                        const ::Vector2 posTo {
+                            connectedNode->position().x,
+                            connectedNode->position().y
+                                + connectedNode->size().y * 0.5f
+                                + node::connectionGap * (indexTo - 1),
+                        };
+
+                        const float connectionRadius { 5 };
+                        ::DrawCircleV(posFrom, connectionRadius, ::RED);
+                        ::DrawCircleV(posTo, connectionRadius, ::BLUE);
+                        ::DrawLineV(posFrom, posTo, ::BLACK);
                     }
                 }
             }
@@ -138,8 +174,8 @@ auto main(int argc, char** argv) -> int {
 
             // update the camera position
             if (::IsMouseButtonDown(::MOUSE_BUTTON_LEFT)) {
-                auto delta = ::GetMouseDelta();
-                delta = ::Vector2Scale(delta, -1.0f / camera.zoom);
+                const auto delta = ::Vector2Scale(::GetMouseDelta(),
+                        -1.0f / camera.zoom);
                 camera.target = ::Vector2Add(camera.target, delta);
             }
 
@@ -153,8 +189,7 @@ auto main(int argc, char** argv) -> int {
 
                 const auto scale = wheel * 0.25f;
                 camera.zoom = std::clamp(
-                        ::expf(::logf(camera.zoom) + scale),
-                        0.5f, 2.75f);
+                        ::expf(::logf(camera.zoom) + scale), 0.5f, 2.75f);
 
                 env.load_font(std::floor(env.fontSizeDefault * camera.zoom));
             }
