@@ -66,10 +66,10 @@ class node final {
         auto render_text(void) const noexcept -> void;
 
     public:
-        static constexpr float connectionGap { 20 };
+        static inline constexpr float connectionGap { 20 };
 
     private:
-        static constexpr float width { 500 };
+        static inline constexpr float width { 500 };
         static constexpr float padding { 10 };
 
         struct node_text {

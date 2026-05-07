@@ -52,8 +52,8 @@ class enviroment final {
         enviroment(void) = default;
 
     public:
-        static constexpr int gridSize { 50 };
-        static constexpr int fontSizeDefault { 20 };
+        static inline constexpr int gridSize { 50 };
+        static inline constexpr int fontSizeDefault { 20 };
 
     private:
         std::filesystem::path _program {};
