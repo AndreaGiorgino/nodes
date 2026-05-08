@@ -46,20 +46,20 @@ class node final {
         [[nodiscard]] auto uuid(void) const noexcept -> std::string;
 
         template<class Self>
-        [[nodiscard]] auto& title(this Self&& self) noexcept;
+            [[nodiscard]] auto& title(this Self&& self) noexcept;
 
         template<class Self>
-        [[nodiscard]] auto& description(this Self&& self) noexcept;
+            [[nodiscard]] auto& description(this Self&& self) noexcept;
 
         auto title_size(void) const noexcept -> ::Vector2;
         auto description_size(void) const noexcept -> ::Vector2;
         auto size(void) const noexcept -> ::Vector2;
 
         template<class Self>
-        [[nodiscard]] auto& position(this Self&& self) noexcept;
+            [[nodiscard]] auto& position(this Self&& self) noexcept;
 
         template<class Self>
-        [[nodiscard]] auto& connections(this Self&& self) noexcept;
+            [[nodiscard]] auto& connections(this Self&& self) noexcept;
 
         auto update(void) noexcept -> void;
         auto render(void) const noexcept -> void;
@@ -67,27 +67,27 @@ class node final {
 
     public:
         static struct style {
-            static inline constexpr float width { 500 };
+            static inline constexpr float width   { 500 };
             static inline constexpr float padding { 10 };
 
             static inline constexpr float borderRoundness { 0.2f };
-            static inline constexpr int borderSegments { 50 };
+            static inline constexpr int   borderSegments  { 50 };
             static inline constexpr float borderThickness { 2 };
 
-            static inline constexpr float connectionGap { 20 };
+            static inline constexpr float connectionGap       { 20 };
             static inline constexpr float connectionThickness { 2 };
 
 #ifdef DARK_THEME
             static inline constexpr ::Color backgroundColor { 20, 20, 20, 150 };
-            static inline constexpr ::Color highligthColor { 102, 155, 188, 150 };
-            static inline constexpr ::Color borderColor { ::RAYWHITE };
-            static inline constexpr ::Color textColor { ::RAYWHITE };
+            static inline constexpr ::Color highligthColor  { 102, 155, 188, 150 };
+            static inline constexpr ::Color borderColor     { ::RAYWHITE };
+            static inline constexpr ::Color textColor       { ::RAYWHITE };
             static inline constexpr ::Color connectionColor { ::RAYWHITE };
 #else
             static inline constexpr ::Color backgroundColor { 255, 255, 255, 150 };
-            static inline constexpr ::Color highligthColor { 162, 210, 255, 150 };
-            static inline constexpr ::Color borderColor { ::BLACK };
-            static inline constexpr ::Color textColor { ::BLACK };
+            static inline constexpr ::Color highligthColor  { 162, 210, 255, 150 };
+            static inline constexpr ::Color borderColor     { ::BLACK };
+            static inline constexpr ::Color textColor       { ::BLACK };
             static inline constexpr ::Color connectionColor { ::BLACK };
 #endif
         } style;

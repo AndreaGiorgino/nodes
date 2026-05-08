@@ -6,6 +6,8 @@
 #include "raylib.h"
 #include "scene.hxx"
 
+#include "widget/label.hxx"
+
 namespace fs = std::filesystem;
 
 static inline constexpr auto initialWidth  = 1920;
@@ -37,15 +39,15 @@ auto main(int argc, char** argv) -> int {
     auto& camera = env.camera();
     camera.zoom = 1.0f;
 
-    scene mainScene { configFilePath };
+    scene s { configFilePath };
 
     // TODO: handle error propagation
     // TODO: snackbar implementation
     while (!::WindowShouldClose()) {
         ::BeginDrawing();
         {
-            mainScene.render();
-            mainScene.update();
+            s.render();
+            s.update();
         }
         ::EndDrawing();
     };

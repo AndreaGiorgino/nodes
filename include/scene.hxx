@@ -43,10 +43,10 @@ class scene final {
         static struct style {
 #ifdef DARK_THEME
             static inline constexpr ::Color backgroundColor { ::BLACK };
-            static inline constexpr ::Color gridColor { ::LIGHTGRAY };
+            static inline constexpr ::Color gridColor       { ::LIGHTGRAY };
 #else
             static inline constexpr ::Color backgroundColor { ::RAYWHITE };
-            static inline constexpr ::Color gridColor { ::LIGHTGRAY };
+            static inline constexpr ::Color gridColor       { ::LIGHTGRAY };
 #endif
         } style;
 

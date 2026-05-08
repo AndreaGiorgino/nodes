@@ -44,7 +44,7 @@ namespace gui {
             return ret;
         }
 
-    auto draw_text(std::string_view text, ::Vector2 pos, ::Color tint,
+    auto draw_text(std::string_view text, ::Vector2 position, ::Color tint,
             bool scaled) noexcept -> void {
             if (text.empty())
                 return;
@@ -53,6 +53,6 @@ namespace gui {
             const auto& [font, fontSize] = scaled
                 ? env.font() : env.font_default();
 
-            ::DrawTextEx(font, text.data(), pos, fontSize, 1, tint);
+            ::DrawTextEx(font, text.data(), position, fontSize, 1, tint);
         }
 } // namespace gui
