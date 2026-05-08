@@ -69,5 +69,5 @@ class enviroment final {
 
 template<class Self>
 auto&& enviroment::camera(this Self&& self) noexcept {
-    return std::forward<Self>(self)._camera;
+    return std::forward_like<Self>(self._camera);
 }
