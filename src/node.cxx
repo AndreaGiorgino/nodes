@@ -104,51 +104,57 @@ auto node::render(void) const -> void {
     const auto screenPos = ::GetWorldToScreen2D(_pos, camera);
 
     // title background
-    ::BeginScissorMode(screenPos.x, screenPos.y, _titleSize.x * camera.zoom,
-            _titleSize.y * camera.zoom);
+    ::BeginMode2D(camera);
     {
-        ::DrawRectangleRounded({
+        ::BeginScissorMode(screenPos.x, screenPos.y, _titleSize.x * camera.zoom,
+                _titleSize.y * camera.zoom);
+        {
+            ::DrawRectangleRounded({
+                        _pos.x,
+                        _pos.y,
+                        _titleSize.x,
+                        _titleSize.y + _descriptionSize.y,
+                    }, node::style::borderRoundness, node::style::borderSegments,
+                    node::style::highligthColor);
+        }
+        ::EndScissorMode();
+
+        // description background
+        ::DrawRectangleV({
+                    _pos.x,
+                    _pos.y + _titleSize.y,
+                }, _descriptionSize, node::style::backgroundColor);
+
+        // horizontal separator
+        ::DrawLineEx({
+                    _pos.x,
+                    _pos.y + _titleSize.y,
+                }, {
+                    _pos.x + _titleSize.x,
+                    _pos.y + _titleSize.y
+                }, node::style::borderThickness, node::style::borderColor);
+
+        // border
+        if (_focus)
+            ::DrawRectangleRoundedLinesEx({
+                        _pos.x,
+                        _pos.y,
+                        _titleSize.x,
+                        _titleSize.y + _descriptionSize.y,
+                    }, node::style::borderRoundness, node::style::borderSegments,
+                    node::style::borderThickness * 2.0f,
+                    node::style::borderColorFocus);
+        else ::DrawRectangleRoundedLinesEx({
                     _pos.x,
                     _pos.y,
                     _titleSize.x,
                     _titleSize.y + _descriptionSize.y,
                 }, node::style::borderRoundness, node::style::borderSegments,
-                node::style::highligthColor);
+                node::style::borderThickness, node::style::borderColor);
     }
-    ::EndScissorMode();
+    ::EndMode2D();
 
-    // description background
-    ::DrawRectangleV({
-                _pos.x,
-                _pos.y + _titleSize.y,
-            }, _descriptionSize, node::style::backgroundColor);
-
-    // horizontal separator
-    ::DrawLineEx({
-                _pos.x,
-                _pos.y + _titleSize.y,
-            }, {
-                _pos.x + _titleSize.x,
-                _pos.y + _titleSize.y
-            }, node::style::borderThickness, node::style::borderColor);
-
-    // border
-    if (_focus)
-        ::DrawRectangleRoundedLinesEx({
-                    _pos.x,
-                    _pos.y,
-                    _titleSize.x,
-                    _titleSize.y + _descriptionSize.y,
-                }, node::style::borderRoundness, node::style::borderSegments,
-                node::style::borderThickness * 2.0f,
-                node::style::borderColorFocus);
-    else ::DrawRectangleRoundedLinesEx({
-                _pos.x,
-                _pos.y,
-                _titleSize.x,
-                _titleSize.y + _descriptionSize.y,
-            }, node::style::borderRoundness, node::style::borderSegments,
-            node::style::borderThickness, node::style::borderColor);
+    render_text();
 }
 
 auto node::render_text(void) const -> void {

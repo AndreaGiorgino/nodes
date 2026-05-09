@@ -71,7 +71,6 @@ class node final : public widget::base {
 
         auto update(void) -> void override;
         auto render(void) const -> void override;
-        auto render_text(void) const -> void;
 
     public:
         static struct style {
@@ -107,6 +106,9 @@ class node final : public widget::base {
             std::string text {};
             std::string wrapped {};
         };
+
+    private:
+        auto render_text(void) const -> void;
 
     private:
         std::string _uuid {};
