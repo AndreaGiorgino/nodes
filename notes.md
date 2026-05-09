@@ -12,7 +12,7 @@
 - [ ] Implement add node widget
 - [ ] Implement focus capability
 - [ ] Implement focused node controls:
-    - [ ] Implement update position
+    - [x] Implement update position
     - [ ] Implement update title widget
     - [ ] Implement update description widget
     - [ ] Implement add connection widget
