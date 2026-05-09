@@ -6,6 +6,7 @@
 #include "raylib.h"
 #include "raymath.h"
 #include "scene.hxx"
+#include "widget/context_menu.hxx"
 
 namespace fs = std::filesystem;
 namespace ranges = std::ranges;
@@ -47,7 +48,7 @@ auto scene::load(fs::path configFilePath) -> void {
             else _nodeMap.insert({ uuid, { node } });
 }
 
-auto scene::render_grid(void) const noexcept -> void {
+auto scene::render_grid(void) const -> void {
     const auto& env = enviroment::get_instance();
     const auto& camera = env.camera();
 
@@ -88,16 +89,16 @@ auto scene::render_nodes(void) const -> void {
     const auto& env = enviroment::get_instance();
     const auto& camera = env.camera();
 
-    for (const const_node_ptr node : _nodes) {
+    // render connections
+    for (const node::const_shared_ptr node : _nodes) {
         ::BeginMode2D(camera);
         {
-            // iterate connections
             for (size_t indexFrom = 0; indexFrom < node->connections().size();
                     indexFrom++) {
                 const auto& connectedNodeUuid =
                     node->connections()[indexFrom];
                 const auto& connectedNode =
-                    [&](void) -> node_ptr {
+                    [&](void) -> node::shared_ptr {
                         for (const auto& n : _nodes)
                             if (n->uuid() == connectedNodeUuid)
                                 return n;
@@ -152,7 +153,8 @@ auto scene::render_nodes(void) const -> void {
         ::EndMode2D();
     }
 
-    for (const const_node_ptr node : _nodes)
+    // render nodes on top of connections
+    for (const node::const_shared_ptr node : _nodes)
         node->render();
 }
 
@@ -167,10 +169,11 @@ auto scene::update(void) -> void {
     auto& env = enviroment::get_instance();
     auto& camera = env.camera();
 
-    // update the focused node
+    // check if node out of focus
     if (::IsMouseButtonPressed(::MOUSE_BUTTON_LEFT)
             && _focusedNode
             && !_focusedNode->check_collision()) {
+        _focusedNode->close_menu();
         _focusedNode->focus() = false;
         _focusedNode = nullptr;
     }
@@ -180,10 +183,11 @@ auto scene::update(void) -> void {
         const auto delta = ::Vector2Scale(::GetMouseDelta(),
                 -1.0f / camera.zoom);
 
-        if (_focusedNode)
+        if (_focusedNode) {
+            _focusedNode->close_menu();
             _focusedNode->position() = ::Vector2Add(_focusedNode->position(),
                     ::Vector2Multiply(delta, { -1, -1 }));
-        else camera.target = ::Vector2Add(camera.target, delta);
+        } else camera.target = ::Vector2Add(camera.target, delta);
     }
 
     // update the camera zoom
@@ -202,10 +206,15 @@ auto scene::update(void) -> void {
         env.load_font(std::floor(env.fontSizeDefault * camera.zoom));
     }
 
+    // update focused node
     for (const auto& node : _nodes) {
         node->update();
 
-        if (::IsMouseButtonPressed(::MOUSE_BUTTON_LEFT)
+        if (::IsMouseButtonPressed(::MOUSE_BUTTON_RIGHT)
+                && node == _focusedNode
+                && node->check_collision()) {
+            node->open_menu();
+        } else if (::IsMouseButtonPressed(::MOUSE_BUTTON_LEFT)
                 && node->check_collision()) {
             _focusedNode = node;
             _focusedNode->focus() = true;
