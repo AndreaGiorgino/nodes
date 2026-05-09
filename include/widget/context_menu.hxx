@@ -31,6 +31,8 @@ namespace widget {
             ~context_menu(void) noexcept = default;
 
         public:
+            auto check_collision(void) const noexcept -> bool override;
+
             template<class Self>
                 auto&& open(this Self&& self) noexcept;
             template<class Self>

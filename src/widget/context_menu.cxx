@@ -34,6 +34,10 @@ namespace widget {
                 _size.x += 50;
         }
 
+    auto context_menu::check_collision(void) const noexcept -> bool {
+        return _open ? base::check_collision() : false;
+    }
+
     auto context_menu::render(void) const -> void {
         if (!_open)
             return;
