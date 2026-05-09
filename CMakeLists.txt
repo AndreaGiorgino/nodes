@@ -9,6 +9,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Dependencies
 
+include(cmake/Options.cmake)
 include(FetchContent)
 
 # https://github.com/raysan5/raylib/blob/master/projects/CMake/CMakeLists.txt
