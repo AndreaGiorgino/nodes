@@ -169,22 +169,13 @@ auto scene::update(void) -> void {
     auto& env = enviroment::get_instance();
     auto& camera = env.camera();
 
-    // check if node out of focus
-    if (::IsMouseButtonPressed(::MOUSE_BUTTON_LEFT)
-            && _focusedNode
-            && !_focusedNode->check_collision()) {
-        _focusedNode->close_menu();
-        _focusedNode->focus() = false;
-        _focusedNode = nullptr;
-    }
-
     // update the camera position
     if (::IsMouseButtonDown(::MOUSE_BUTTON_LEFT)) {
         const auto delta = ::Vector2Scale(::GetMouseDelta(),
                 -1.0f / camera.zoom);
 
         if (_focusedNode) {
-            _focusedNode->close_menu();
+            // TODO: close menu
             _focusedNode->position() = ::Vector2Add(_focusedNode->position(),
                     ::Vector2Multiply(delta, { -1, -1 }));
         } else camera.target = ::Vector2Add(camera.target, delta);
@@ -206,18 +197,26 @@ auto scene::update(void) -> void {
         env.load_font(std::floor(env.fontSizeDefault * camera.zoom));
     }
 
-    // update focused node
+    // updated nodes
     for (const auto& node : _nodes) {
-        node->update();
-
-        if (::IsMouseButtonPressed(::MOUSE_BUTTON_RIGHT)
+        // check if node is out of focus
+        if (::IsMouseButtonPressed(::MOUSE_BUTTON_LEFT)) {
+            if (node == _focusedNode
+                    && !node->check_collision()) {
+                // TODO: close menu
+                node->focus() = false;
+                _focusedNode = nullptr;
+            } else if (node != _focusedNode
+                    && node->check_collision()) {
+                node->focus() = true;
+                _focusedNode = node;
+            }
+        } else if (::IsMouseButtonPressed(::MOUSE_BUTTON_RIGHT)
                 && node == _focusedNode
                 && node->check_collision()) {
-            node->open_menu();
-        } else if (::IsMouseButtonPressed(::MOUSE_BUTTON_LEFT)
-                && node->check_collision()) {
-            _focusedNode = node;
-            _focusedNode->focus() = true;
+            // TODO: open menu
         }
+
+        node->update();
     }
 }
