@@ -14,18 +14,17 @@ namespace widget {
         _opts(std::move(opts)) {
             // set initial size
             if (_opts.fitSize)
-                _size = { 0, context_menu::style::padding * 2.0f };
+                _size = { 0, 0 };
 
             // calculate size based on items
             for (const auto& [text, e] : items) {
                 _items.emplace_back(text, e);
                 if (_opts.fitSize) {
-                    const auto textSize = ::Vector2AddValue(
-                            gui::measure_text(text),
-                            context_menu::style::padding);
-                    _size.x = std::max(_size.x, textSize.x
-                            + context_menu::style::padding * 2.0f);
-                    _size.y += textSize.y;
+                    const auto textSize = gui::measure_text(text);
+                    _size.x = std::max(_size.x,
+                            textSize.x + context_menu::style::padding * 2.0f);
+                    _size.y += textSize.y
+                        + context_menu::style::padding * 2.0f;
                 }
             }
 

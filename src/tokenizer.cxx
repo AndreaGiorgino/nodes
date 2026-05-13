@@ -6,7 +6,7 @@
 #include "uuid.hxx"
 #include "tokenizer.hxx"
 
-namespace fs = std::filesystem;
+namespace fs     = std::filesystem;
 namespace ranges = std::ranges;
 
 tokenizer::tokenizer_error::tokenizer_error(std::string_view message) noexcept {

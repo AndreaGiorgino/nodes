@@ -8,9 +8,10 @@
 #include "scene.hxx"
 #include "widget/context_menu.hxx"
 
-namespace fs = std::filesystem;
+namespace chrono = std::chrono;
+namespace fs     = std::filesystem;
 namespace ranges = std::ranges;
-namespace views = std::views;
+namespace views  = std::views;
 
 scene::scene_error::scene_error(std::string_view message) noexcept {
     _message += message;

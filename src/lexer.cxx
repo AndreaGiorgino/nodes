@@ -7,7 +7,7 @@
 #include "raylib.h"
 #include "tokenizer.hxx"
 
-namespace fs = std::filesystem;
+namespace fs     = std::filesystem;
 namespace ranges = std::ranges;
 
 lexer::lexer_error::lexer_error(std::string_view message) noexcept {
