@@ -100,10 +100,12 @@ namespace widget {
     }
 
     auto context_menu::update(void) -> void {
-        if (!_open
-                || !check_collision()
-                || !::IsMouseButtonPressed(::MOUSE_BUTTON_LEFT))
+        if (!_open || !::IsMouseButtonPressed(::MOUSE_BUTTON_LEFT))
             return;
+        else if (!check_collision()) {
+            _open = false;
+            return;
+        }
 
         float yRelative = _pos.y;
         for (const auto& [text, event] : _items) {
@@ -115,8 +117,12 @@ namespace widget {
                 textSize.y + context_menu::style::padding * 2.0f,
             };
 
-            if (::CheckCollisionPointRec(::GetMousePosition(), rec))
+            if (::CheckCollisionPointRec(::GetMousePosition(), rec)) {
                 event();
+                _open = false;
+                break;
+            }
+
             yRelative += textSize.y + context_menu::style::padding * 2.0f;
         }
     }
