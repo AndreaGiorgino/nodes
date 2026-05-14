@@ -59,9 +59,9 @@ class scene final {
         auto update(void) -> void;
 
     private: // methods
-        auto render_grid(void) const -> void;
-        auto render_nodes(void) const -> void;
-        auto render_widgets(void) const -> void;
+        auto _render_grid(void) const -> void;
+        auto _render_nodes(void) const -> void;
+        auto _render_widgets(void) const -> void;
 
     private: // members
         std::filesystem::path _configFilePath {};

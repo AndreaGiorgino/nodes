@@ -50,7 +50,7 @@ auto scene::load(fs::path configFilePath) -> void {
             else _nodeMap.insert({ uuid, { node } });
 }
 
-auto scene::render_grid(void) const -> void {
+auto scene::_render_grid(void) const -> void {
     const auto& env = enviroment::get_instance();
     const auto& camera = env.camera();
 
@@ -87,7 +87,7 @@ auto scene::render_grid(void) const -> void {
     ::EndMode2D();
 }
 
-auto scene::render_nodes(void) const -> void {
+auto scene::_render_nodes(void) const -> void {
     const auto& env = enviroment::get_instance();
     const auto& camera = env.camera();
 
@@ -163,12 +163,12 @@ auto scene::render_nodes(void) const -> void {
 auto scene::render(void) const -> void {
     ::ClearBackground(scene::style::backgroundColor);
 
-    render_grid();
+    _render_grid();
 
     if (_renderCallback)
         _renderCallback(*this);
 
-    render_nodes();
+    _render_nodes();
 
     auto& env = enviroment::get_instance();
     auto& camera = env.camera();
@@ -190,6 +190,7 @@ auto scene::render(void) const -> void {
                 node::style::borderColorFocus);
     }
 
+    // render widgets
     if (_menu)
         _menu->render();
 }
@@ -199,17 +200,11 @@ auto scene::update(void) -> void {
     auto& camera = env.camera();
 
     // update the camera position
-    if (::IsMouseButtonDown(::MOUSE_BUTTON_LEFT)) {
-        if (!_focusedNode) {
-            const auto delta = ::Vector2Scale(::GetMouseDelta(),
-                    -1.0f / camera.zoom);
-            camera.target = ::Vector2Add(camera.target, delta);
-        } else if (_menu
-                && !_menu->check_collision()) {
-            _focusedNode = nullptr;
-            _menu->open() = false;
-            _renderCallback = {};
-        }
+    if (::IsMouseButtonDown(::MOUSE_BUTTON_LEFT)
+            && !_focusedNode) {
+        const auto delta = ::Vector2Scale(::GetMouseDelta(),
+                -1.0f / camera.zoom);
+        camera.target = ::Vector2Add(camera.target, delta);
     }
 
     // update the camera zoom
@@ -230,19 +225,19 @@ auto scene::update(void) -> void {
 
     // updated nodes
     for (const auto& node : _nodes) {
-        // check if node is out of focus
+        node->update();
+
         if (::IsMouseButtonPressed(::MOUSE_BUTTON_LEFT)) {
-             if (node != _focusedNode
-                    && node->check_collision()) {
-                _focusedNode = node;
-                if (_menu && !_menu->check_collision()) {
+            if (node == _focusedNode) {
+                if (!node->check_collision()
+                        && _menu
+                        && !_menu->check_collision()) {
+                    _focusedNode = nullptr;
                     _menu->open() = false;
                     _renderCallback = {};
                 }
-            } else if (node == _focusedNode
-                    && !node->check_collision()) {
-                _focusedNode = nullptr;
-
+            } else if (node->check_collision()) {
+                _focusedNode = node;
                 if (_menu) {
                     _menu->open() = false;
                     _renderCallback = {};
@@ -250,14 +245,17 @@ auto scene::update(void) -> void {
             }
         } else if (::IsMouseButtonDown(::MOUSE_BUTTON_LEFT)) {
             if (node == _focusedNode) {
-                const auto delta = ::Vector2Scale(::GetMouseDelta(),
-                        1.0f / camera.zoom);
-                node->position() = ::Vector2Add(node->position(), delta);
-            }
-
-            if (_menu) {
-                _menu->open() = false;
-                _renderCallback = {};
+                if (node->check_collision()) {
+                    const auto delta = ::Vector2Scale(::GetMouseDelta(),
+                            1.0f / camera.zoom);
+                    node->position() = ::Vector2Add(node->position(), delta);
+                } else if (_menu
+                        && _menu->open()
+                        && !_menu->check_collision()) {
+                    _focusedNode = nullptr;
+                    _menu->open() = false;
+                    _renderCallback = {};
+                }
             }
         } else if (::IsMouseButtonPressed(::MOUSE_BUTTON_RIGHT)
                 && node == _focusedNode
@@ -281,10 +279,39 @@ auto scene::update(void) -> void {
                                                 * ((int)s._focusedNode->connections().size() - 1),
                                         };
 
-                                        ::DrawLineBezier(startPos,
-                                                ::GetMousePosition(),
+                                        const auto& env = enviroment::get_instance();
+                                        const auto& camera = env.camera();
+
+                                        ::BeginMode2D(camera);
+                                        {
+                                        ::DrawLineBezier(
+                                                startPos,
+                                                ::GetScreenToWorld2D(::GetMousePosition(), camera),
                                                 node::style::connectionThickness,
                                                 node::style::connectionColor);
+                                        }
+                                        ::EndMode2D();
+
+                                        for (const node::const_shared_ptr n : s._nodes) {
+                                            if (!n->check_collision())
+                                                continue;
+
+                                            const auto pos = ::GetWorldToScreen2D(n->position(), camera);
+                                            const auto titleSize =
+                                                ::Vector2Scale(n->title_size(), camera.zoom);
+                                            const auto descriptionSize =
+                                                ::Vector2Scale(n->description_size(), camera.zoom);
+
+                                            ::DrawRectangleRoundedLinesEx({
+                                                        pos.x,
+                                                        pos.y,
+                                                        titleSize.x,
+                                                        titleSize.y + descriptionSize.y,
+                                                    }, node::style::borderRoundness, node::style::borderSegments,
+                                                    node::style::borderThickness * 2.0f,
+                                                    node::style::borderColorFocus);
+                                            break;
+                                        }
                                     };
                             },
                         },
@@ -295,7 +322,9 @@ auto scene::update(void) -> void {
             _menu->animation_start() = chrono::steady_clock::now();
             _renderCallback = {};
         }
-
-        node->update();
     }
+
+    // update widgets
+    if (_menu)
+        _menu->update();
 }
